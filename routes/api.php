@@ -8,6 +8,7 @@ use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\IncentiveController;
 use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\ReportController;
+use Illuminate\Support\Facades\Http;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -15,21 +16,30 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('logout', [AuthController::class, 'logout']);
 
+    // ✅ Investor routes
     Route::apiResource('investors', InvestorController::class);
+    Route::post('investors/{id}/archive', [InvestorController::class, 'archive']);
+    Route::post('investors/{id}/restore', [InvestorController::class, 'restore']);
 
+    // ✅ Project routes
     Route::apiResource('projects', ProjectController::class);
+    Route::post('projects/{id}/archive', [ProjectController::class, 'archive']);
+    Route::post('projects/{id}/restore', [ProjectController::class, 'restore']);
 
+    // ✅ Incentive routes
     Route::apiResource('incentives', IncentiveController::class);
 
-    Route::get('applications', [ApplicationController::class, 'index']); 
-    Route::post('applications', [ApplicationController::class, 'store']); 
+    // ✅ Application routes
+    Route::get('applications', [ApplicationController::class, 'index']);
+    Route::post('applications', [ApplicationController::class, 'store']);
     Route::get('applications/{id}', [ApplicationController::class, 'show']);
-    Route::post('applications/{id}/decide', [ApplicationController::class, 'decide']); 
+    Route::post('applications/{id}/decide', [ApplicationController::class, 'decide']);
+    Route::post('applications/{id}/archive', [ApplicationController::class, 'archive']);
+    Route::post('applications/{id}/restore', [ApplicationController::class, 'restore']);
 
+    // ✅ Reports
     Route::get('reports/summary', [ReportController::class, 'summary']);
-
-    // New route for AI summarization
-    Route::post('reports/summarize', function(Request $request) {
+    Route::post('reports/summarize', function (Request $request) {
         $text = $request->input('text');
 
         $response = Http::withHeaders([
